@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<!--https://www.pubnub.com/developers/demos/10chat/-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PunNub Implementation</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #FF8A62;
+        }
+        
+        #box {
+            height: 100px;
+            width: 350px;
+            overflow: auto;
+            padding-left: 10px;
+            background: white;
+        }
+
+        .container{
+            width: 40%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            Rappi Test Chat
+        </h1>
+        <br> User:
+        <input type="text" id="user" value="" />
+        <br>
+        <br>
+        <div id="box"></div>
+        <br> Message:
+        <input type="text" id="input" placeholder="envianos tu mensaje" value="" />
+    </div>
+</body>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.4.4.js"></script>
+<script>
+    (function () {
+        var pubnub = new PubNub({
+            subscribeKey: "sub-c-84db4b08-faaf-11e6-a4e5-02ee2ddab7fe",
+            publishKey: "pub-c-d807a247-1714-466b-b68f-74eeed173d4c",
+            ssl: true
+        });
+        function selectorId(id) { return document.getElementById(id); }
+
+        var box = selectorId('box'), input = selectorId('input'), from = selectorId('user'), channel = 'rappi-demo';        
+
+        pubnub.addListener({
+            message: function (obj) {
+                box.innerHTML = ('' + obj.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML
+            }
+        });
+
+        pubnub.subscribe({ channels: [channel] });
+        input.addEventListener('keyup', function (e) {            
+            if ((e.keyCode || e.charCode) === 13) {
+                var fromUser = from.value.trim() == '' ? 'anonimo ' : from.value;
+                pubnub.publish({ channel: channel, message: fromUser + ' dice:  ' + input.value, x: (input.value = '') });
+            }
+        });
+    })();
+
+</script>
+
+
+</html>
